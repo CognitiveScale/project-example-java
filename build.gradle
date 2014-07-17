@@ -1,0 +1,98 @@
+import java.util.concurrent.TimeUnit
+
+buildscript {
+    repositories {
+        maven {
+            url "http://oss.sonatype.org/content/groups/public/"
+        }
+        maven {
+            url "http://10.0.0.116:8081/nexus/content/repositories/thirdparty/"
+        }
+        maven {
+            url "http://10.0.0.116:8081/nexus/content/repositories/cs_internal/"
+        }
+        jcenter()
+    }
+    dependencies {
+        classpath group: "com.c12e.sdk", name: "sdk-gradle", version: "0.3.0-SNAPSHOT", changing: true
+    }
+}
+
+
+allprojects {
+    apply plugin: 'maven'
+    apply plugin: 'idea'
+    apply plugin: 'java'
+
+    group = 'example'
+    version = '0.1.0-SNAPSHOT'
+
+
+    configurations.all {
+        resolutionStrategy {
+            cacheChangingModulesFor 5, TimeUnit.MINUTES
+            // http://stackoverflow.com/questions/12651959/maven-build-error-no-versions-available-for-org-codehaus-jacksonjackson-core-as
+            force "org.codehaus.jackson:jackson-core-asl:1.9.0",
+                    "org.codehaus.jackson:jackson-mapper-asl:1.9.0"
+        }
+    }
+
+    repositories {
+        mavenLocal()
+        maven {
+            url "http://oss.sonatype.org/content/groups/public/"
+        }
+        maven {
+            url "http://10.0.0.116:8081/nexus/content/repositories/thirdparty/"
+        }
+        maven {
+            url "http://10.0.0.116:8081/nexus/content/repositories/cs_internal/"
+        }
+
+        maven {
+            url "http://repo.akka.io/releases/"
+        }
+        maven {
+            url "http://repo.spray.io"
+        }
+        maven {
+            url "http://maven.mashape.com/releases"
+        }
+        maven {
+            url "http://repo.typesafe.com/typesafe/releases"
+        }
+        maven {
+            url "http://clojars.org/repo"
+        }
+
+
+        maven {
+            url "http://pk11-scratch.googlecode.com/svn/trunk"
+        }
+        maven {
+            url "http://repo.typesafe.com/typesafe/releases"
+        }
+    }
+}
+
+subprojects {
+    apply plugin: 'application'
+    apply plugin: 'c12e'
+
+    c12e {
+        apiKey = "xyz"
+        host = "127.0.0.1"
+        port = 3125
+    }
+
+    configurations {
+        platform
+    }
+
+    dependencies {
+        compile group: "scout.engine", name: "api", version: "0.3.0-SNAPSHOT", changing: true
+        compile group: "c12e.neptune", name: "neptune", version: "0.3.0-SNAPSHOT", changing: true
+        platform group: "c12e.neptune", name: "neptune", version: "0.3.0-SNAPSHOT", changing: true
+
+    }
+}

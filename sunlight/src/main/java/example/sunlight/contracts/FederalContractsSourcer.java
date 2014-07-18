@@ -18,9 +18,11 @@ public class FederalContractsSourcer extends BaseSourcer<ContractsConfig> {
     @Override
     public void source(FacilityHost facilityHost, ContractsConfig config, ARDLineage lineage) throws IOException {
         ContractsClient client = new ContractsClient();
+
         client.apiKey(config.apiKey);
         client.fiscalYear(Calendar.getInstance().get(Calendar.YEAR));
         client.perPage(1000);
+
         try (StagingSpace staging = lineage.staging()) {
             for (FederalContract contract : client.getPage(1)) {
                 GraphBuilder builder = new GraphBuilder();
@@ -30,5 +32,6 @@ public class FederalContractsSourcer extends BaseSourcer<ContractsConfig> {
             }
             staging.commit();
         }
+        reportCompleted();
     }
 }
